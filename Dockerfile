@@ -12,8 +12,8 @@ WORKDIR /home
 RUN mv /build/dist/index.js . && \
     mv /build/package.json . && \
     mv /build/package-lock.json . && \
-    # npm i --omit=dev && \
-    npm ci
+    rm -fr /build && \
+    npm ci --omit=dev
 
 USER node
 
