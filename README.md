@@ -2,7 +2,7 @@
 
 #### Sync your local images to GitHub's Container Registry using webhooks.
 
-When the server recieves a webhook from GitHub with the event `package.published` it checks if the image exists locally. If so it proceeds to download the new image & restart every container using this image.
+The server reacts to webhooks from GitHub with the event `package.published`. If everything checks out it proceeds to download the new image & restart every container using this image.
 
 ### Limitations
 
@@ -19,7 +19,25 @@ When the server recieves a webhook from GitHub with the event `package.published
 cp example.env .env
 ```
 
-For more options see: `src/utils/config.ts`
+Options
+
+| Value          | Default              | Info                  |
+| -------------- | -------------------- | --------------------- |
+| WEBHOOK_SECRET | undefined            | Required!             |
+| WEBHOOK_PATH   | /                    | Webhooks handler path |
+| SOCKET_PATH    | /var/run/docker.sock | Docker unix socket    |
+| DEBUG          | undefined            | see `package.json`    |
+| PORT           | 8000                 |                       |
+
+> For full configuration & defaults see: `src/utils/config.ts`
+
+### Using Docker
+
+```bash
+docker compose up -d
+```
+
+### Without docker
 
 #### Install
 
@@ -49,5 +67,6 @@ npm run dev:debug
 
 ## Todo's
 
-- Implement docker secrets for `WEBHOOK_SECRET`.
+- Implement docker secrets for `WEBHOOK_SECRET` as `WEBHOOK_SECRET_FILE`.
+- Add fallback process to handle failure recovery.
 - Add version control with downgrade protection.

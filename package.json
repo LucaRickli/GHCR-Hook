@@ -8,7 +8,8 @@
     "dev": "NODE_ENV=development webpack",
     "dev:debug": "DEBUG=webhooks,engine NODE_ENV=development webpack",
     "build": "webpack",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "start:docker": "node index.js"
   },
   "keywords": [],
   "author": "lucarickli",
@@ -29,6 +30,7 @@
     "@octokit/webhooks": "^11.0.0",
     "dockerode": "^3.3.5",
     "dotenv": "^16.0.3",
+    "fs": "^0.0.1-security",
     "http": "^0.0.1-security"
   }
 }

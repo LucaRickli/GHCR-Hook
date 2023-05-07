@@ -1,5 +1,5 @@
 import * as Docker from "dockerode";
-import { statSync } from "node:fs";
+import { statSync } from "fs";
 
 import { SOCKET_PATH } from "../utils/config";
 import { Log } from "../utils/log";

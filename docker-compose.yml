@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  image-sync:
+    build: .
+    container_name: image-sync
+    environment:
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET:?WEBHOOK_SECRET is required!}
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    ports:
+      - "8000:8000"
