@@ -15,6 +15,4 @@ RUN mv /build/dist/index.js . && \
     rm -fr /build && \
     npm ci --omit=dev
 
-USER node
-
 CMD [ "npm", "run", "start:docker" ]
