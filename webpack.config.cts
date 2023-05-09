@@ -1,11 +1,10 @@
 const path = require("path");
 const nodeExternals = require("webpack-node-externals");
-const NodemonPlugin = require("nodemon-webpack-plugin");
+const NodemonPlugin = require("nodemon-webpack-plugin"); // is not ejs compatible
 
 const { NODE_ENV = "production" } = process.env;
 
 module.exports = {
-  mode: "development",
   mode: NODE_ENV,
   watch: NODE_ENV === "development",
   // devtool: "inline-source-map",

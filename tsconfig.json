@@ -4,7 +4,8 @@
     "module": "commonjs",
     "lib": ["es5", "es6", "dom"],
     "rootDir": "src"
-  }
+  },
+  "exclude": ["webpack.config.cts"]
 }
 
 // {
