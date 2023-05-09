@@ -27,7 +27,7 @@ export const WEBHOOK_SECRET = WEBHOOK_SECRET_FILE
   ? readFileSync(WEBHOOK_SECRET_FILE, "utf-8").trim()
   : WEBHOOK_SECRET_SRC;
 
-export const IMAGE_BLACKLIST = IMAGE_BLACKLIST_SRC.toLowerCase().split(" ");
+export const IMAGE_BLACKLIST = IMAGE_BLACKLIST_SRC.toLowerCase().split(/ /g);
 
 export const IS_IMAGE_BLACKLISTED = (img: string): boolean =>
   IMAGE_BLACKLIST.includes(img.toLowerCase());
