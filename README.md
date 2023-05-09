@@ -80,7 +80,12 @@ npm run dev:debug
 
 ## Add container to sync
 
-Pull the docker image you want to sync to your server and start at least one container using this image. Add a webhook to your GitHub repo and select `Content type` => `applications/json` and `select individual events`. In there select `packages` and remove any other selections. Configure the rest of the hook and thats it!
+- Pull the docker image you want to sync to your server.
+- Start at least one container using this image.
+- Add a webhook to your GitHub repo.
+  - Set `Payload Url` to your server.
+  - Select `Content type` = `applications/json`
+  - Select `select individual events`. In there select `packages` and remove any other selections.
 
 ## Todo's
 
