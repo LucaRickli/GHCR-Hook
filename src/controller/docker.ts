@@ -52,10 +52,10 @@ class DockerController {
               const snaphot = await this.createContainerSnapshot(Id, tag);
               await this.removeContainer(Id, true);
               Log.debug(`Removed container: ${Id}`);
-              await this.createContainer(snaphot);
-              Log.debug(`Created container: ${Id}`);
-              await this.startContainer(Id);
-              Log.debug(`Started container: ${Id}`);
+              const { id: newId } = await this.createContainer(snaphot);
+              Log.debug(`Created container: ${newId}`);
+              await this.startContainer(newId);
+              Log.debug(`Started container: ${newId}`);
               resolve(undefined);
             } catch (err) {
               reject(err);
