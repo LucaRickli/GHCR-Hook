@@ -1,6 +1,6 @@
 import { Webhooks } from "@octokit/webhooks";
 
-import { WEBHOOK_SECRET } from "../utils/config";
+import { IS_IMAGE_BLACKLISTED, WEBHOOK_SECRET } from "../utils/config";
 import { AccessLog, Log } from "../utils/log";
 import { dockerController } from "./docker";
 
@@ -39,7 +39,13 @@ webhooks.on("package.published", async (ev) => {
 
   const { package_url } = ev.payload.package.package_version;
 
-  if (!package_url) throw "package_url is missing.";
+  if (!package_url) {
+    throw "package_url is missing.";
+  }
+
+  if (IS_IMAGE_BLACKLISTED(package_url)) {
+    throw "Image is not allowed to be reloaded.";
+  }
 
   await dockerController.reloadImage(package_url);
 });
