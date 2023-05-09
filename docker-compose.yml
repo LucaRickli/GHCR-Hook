@@ -1,11 +1,20 @@
 version: "3.8"
+
+secrets:
+  webhook:
+    file: ./webhook.secret
+
 services:
-  image-sync:
+  webhook:
     build: .
-    container_name: image-sync
+    container_name: webhook
+    secrets:
+      - webhook
     environment:
-      WEBHOOK_SECRET: ${WEBHOOK_SECRET:?WEBHOOK_SECRET is required!}
+      WEBHOOK_SECRET_FILE: /run/secrets/webhook
+      # WEBHOOK_SECRET: ${WEBHOOK_SECRET:?WEBHOOK_SECRET is required!}
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
+      - /var/run/docker.sock:/var/run/docker.sock
+      # - ./logs:/home/logs
     ports:
-      - "8000:8000"
+      - 8000:8000

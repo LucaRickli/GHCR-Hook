@@ -3,17 +3,12 @@ import { createNodeMiddleware } from "@octokit/webhooks";
 
 import { webhooks } from "./controller/webhook";
 import { WEBHOOK_PATH, PORT } from "./utils/config";
-import { Log } from "./utils/log";
-
-// import { dockerController } from "./controller/docker";
-// dockerController
-//   .reloadImage("alpine:latest")
-//   .then(() => console.log("reload complete"));
+import { AccessLog, Log } from "./utils/log";
 
 const middleware = createNodeMiddleware(webhooks, { path: WEBHOOK_PATH });
 
 createServer(async (req, res) => {
-  Log.debug(
+  AccessLog.debug(
     `${req.socket.remoteAddress} => ${req.method} ${req.headers.host}${req.url}`
   );
 
@@ -25,18 +20,14 @@ createServer(async (req, res) => {
 
   const next = (err: any = undefined) => {
     if (err) {
-      Log.error(err);
+      Log.error("Middleware error:", err);
       end(500, `{"error":"Internal server error"}`);
-      return;
-    }
-    if (!res.headersSent) {
+    } else if (!res.headersSent) {
       end(404, `{"error":"Unknown route: ${req.method} ${req.url}"}`);
     }
   };
 
-  if (await middleware(req, res, next).catch(next)) return;
-
-  next();
-}).listen(Number(PORT), undefined, () =>
-  console.log(`Server stared on port ${PORT}`)
-);
+  if (!(await middleware(req, res, next).catch(next))) next();
+}).listen(Number(PORT), undefined, () => {
+  Log.info(`Server started on port ${PORT}`);
+});

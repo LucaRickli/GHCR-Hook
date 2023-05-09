@@ -1,22 +1,52 @@
-import { DEBUG } from "./config";
+import {
+  ACCESS_LOG_FILE,
+  ACCESS_LOG_LEVEL,
+  ERR_LOG_FILE,
+  LOG_LEVEL,
+  ERR_LOG_LEVEL,
+} from "./config";
 
-const prefix = "[webhook]";
-const timestamp = () => `[${new Date(Date.now()).toLocaleString()}]`;
+import * as log4js from "log4js";
 
-export class Log {
-  public static debug(...args: any[]) {
-    if (DEBUG) console.debug(prefix + timestamp(), ...args);
-  }
+log4js.configure({
+  appenders: {
+    console: {
+      type: "console",
+    },
+    file: {
+      type: "file",
+      filename: ERR_LOG_FILE,
+    },
+    "file-filter": {
+      type: "logLevelFilter",
+      appender: "file",
+      level: ERR_LOG_LEVEL,
+    },
+    accessfile: {
+      type: "file",
+      filename: ACCESS_LOG_FILE,
+    },
+    "access-filter": {
+      type: "logLevelFilter",
+      appender: "accessfile",
+      level: ACCESS_LOG_LEVEL,
+    },
+  },
+  categories: {
+    default: {
+      appenders: ["console"],
+      level: "off",
+    },
+    webhooks: {
+      appenders: ["console", "file-filter"],
+      level: LOG_LEVEL,
+    },
+    accessLog: {
+      appenders: ["console", "access-filter"],
+      level: ACCESS_LOG_LEVEL,
+    },
+  },
+});
 
-  public static log(...args: any[]) {
-    console.log(prefix + timestamp(), ...args);
-  }
-
-  public static error(...args: any[]) {
-    console.error(prefix + timestamp(), ...args);
-  }
-
-  public static info(...args: any[]) {
-    console.info(prefix + timestamp(), ...args);
-  }
-}
+export const Log = log4js.getLogger("webhooks");
+export const AccessLog = log4js.getLogger("accessLog");

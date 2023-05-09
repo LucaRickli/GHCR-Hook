@@ -1,10 +1,11 @@
-FROM node:alpine
+FROM node:lts-alpine
 
 WORKDIR /build
 
 COPY ./ ./
 
-RUN npm i && \
+RUN apk update && \
+    npm i && \
     npm run build
 
 WORKDIR /home
@@ -14,5 +15,7 @@ RUN mv /build/dist/index.js . && \
     mv /build/package-lock.json . && \
     rm -fr /build && \
     npm ci --omit=dev
+
+EXPOSE 8000
 
 CMD [ "npm", "run", "start:docker" ]

@@ -8,7 +8,7 @@ module.exports = {
   mode: "development",
   mode: NODE_ENV,
   watch: NODE_ENV === "development",
-  devtool: "inline-source-map",
+  // devtool: "inline-source-map",
   target: "node",
   entry: "./src/index.ts",
   output: {
