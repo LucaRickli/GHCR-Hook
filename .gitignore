@@ -5,3 +5,4 @@ package-lock.json
 **/*.secret
 **/*.log
 logs/
+.DS_Store
