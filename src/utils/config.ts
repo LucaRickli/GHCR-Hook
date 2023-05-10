@@ -10,12 +10,12 @@ export const {
   PORT = "8000",
   SOCKET_PATH = "/var/run/docker.sock",
   WEBHOOK_PATH = "/",
-  DEFAULT_RETRY_COUNT = "3",
-  DEFAULT_RETRY_TIMEOUT = "250", // ms
-  LOG_LEVEL = "info",
+  DEFAULT_RETRY_COUNT = 3,
+  DEFAULT_RETRY_TIMEOUT = 500, // ms
+  LOG_LEVEL = "info", // main log level.
   LOG_PATH = join(__dirname, "/logs"),
-  ERR_LOG_LEVEL = "warn",
-  ACCESS_LOG_LEVEL = "info",
+  ERR_LOG_LEVEL = "warn", // written to "LOGPATH/logs/err.log".
+  ACCESS_LOG_LEVEL = "info", /// set to debug to log every request made to the server.
   IMAGE_BLACKLIST: IMAGE_BLACKLIST_SRC = "ghcr.io/lucarickli/ghcr-hook", // list seperated by whitespaces.
   NODE_ENV,
 } = process.env;

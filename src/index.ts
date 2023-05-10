@@ -1,6 +1,7 @@
 import { createServer } from "http";
 import { createNodeMiddleware } from "@octokit/webhooks";
 
+import "./utils/retryPromise";
 import { webhooks } from "./controller/webhook";
 import { WEBHOOK_PATH, PORT } from "./utils/config";
 import { AccessLog, Log } from "./utils/log";
