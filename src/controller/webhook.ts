@@ -1,6 +1,10 @@
 import { Webhooks } from "@octokit/webhooks";
 
-import { IS_IMAGE_BLACKLISTED, WEBHOOK_SECRET } from "../utils/config";
+import {
+  DOCKER_IMAGE_REGEX,
+  IS_IMAGE_BLACKLISTED,
+  WEBHOOK_SECRET,
+} from "../utils/config";
 import { AccessLog, Log } from "../utils/log";
 import { dockerController } from "./docker";
 
@@ -27,24 +31,26 @@ webhooks.onAny((ev) => {
     );
   }
 
-  Log.log(msg);
+  AccessLog.info(msg);
 });
 
 webhooks.onError((ev) => Log.error("Webhook error:", ev));
 
 webhooks.on("package.published", async (ev) => {
-  AccessLog.log(
-    `Recieved hook: "${ev.name}.${ev.payload.action}". From: ${ev.payload.sender.login} (id: ${ev.payload.sender.id}). Repo: ${ev.payload.repository.full_name} (id: ${ev.payload.repository.id}).`
-  );
+  const { package_url } = ev.payload?.package?.package_version;
 
-  const { package_url } = ev.payload.package.package_version;
-
-  if (!package_url) {
-    throw "package_url is missing.";
+  if (!package_url || !DOCKER_IMAGE_REGEX.test(package_url)) {
+    AccessLog.warn(
+      `Got invalid image tag: From: ${ev.payload.sender.login} (id: ${ev.payload.sender.id}). Repo: ${ev.payload.repository.full_name} (id: ${ev.payload.repository.id}).`
+    );
+    throw new SyntaxError("Invalid package_url.");
   }
 
   if (IS_IMAGE_BLACKLISTED(package_url)) {
-    throw "Image is not allowed to be reloaded.";
+    AccessLog.warn(
+      `Image on blacklist was requested to be reloaded. "${package_url}" From: ${ev.payload.sender.login} (id: ${ev.payload.sender.id}). Repo: ${ev.payload.repository.full_name} (id: ${ev.payload.repository.id}).`
+    );
+    throw new Error("Image is not allowed to be reloaded.");
   }
 
   await dockerController.reloadImage(package_url);
