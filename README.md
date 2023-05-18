@@ -1,13 +1,12 @@
 # GHCR-Hook
 
-#### Keep your local images & containers in sync with GitHub's Container Registry using webhooks.
+#### Keep your local Docker images & containers in sync with GitHub's Container Registry using webhooks.
 
 The server reacts to webhooks from GitHub with the event `package.published`. If everything checks out it proceeds to download the new image & restart every container with the same configuration it was started except for the new image.
 
 ### Limitations
 
-- The docker image has to be stored locally. It wont download unkown images.
-- There has to be at least one Container running using this image.
+- There has to be at least one Container running using the image to be reloaded.
 - Currently does not support versioned images. E.g. upgrade from 1.1 to 1.2 wont work.
 - If something goes wrong there is no recovery!
 
@@ -15,7 +14,11 @@ The server reacts to webhooks from GitHub with the event `package.published`. If
 
 ### Configuration
 
-> For full configuration & defaults see: `src/utils/config.ts`
+#### Required
+
+- WEBHOOK_SECRET (or WEBHOOK_SECRET_FILE)
+
+> For full configuration & defaults see: [`src/utils/config.ts`](https://github.com/LucaRickli/GHCR-Hook/blob/main/src/utils/config.ts)
 
 ### Run with Docker
 
@@ -74,18 +77,18 @@ npm start
 
 ```bash
 npm run dev
-# With debugging
-npm run dev:debug
+npm run dev:debug # With debugging
 ```
 
 ## Add container to sync
 
-- Pull the docker image you want to sync to your server.
-- Start at least one container using this image.
-- Add a webhook to your GitHub repo.
-  - Set `Payload Url` to your server.
-  - Select `Content type` = `applications/json`
-  - Select `select individual events`. In there select `packages` and remove any other selections.
+1. Pull the docker image you want to sync to your server.
+2. Start at least one container using this image.
+3. Add a webhook to your GitHub repo.
+   - Set `Payload Url` to your server.
+   - Set `Webhook Secret` to your generated secret.
+   - Set `Content type` to `applications/json`.
+   - Select `individual events` and remove everything except `packages`.
 
 ## Todo's
 

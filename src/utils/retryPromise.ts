@@ -1,4 +1,4 @@
-import { DEFAULT_RETRY_COUNT, DEFAULT_RETRY_TIMEOUT } from "./config";
+import { DEFAULT_RETRY_COUNT, DEFAULT_RETRY_DELAY } from "./config";
 import { Log } from "./log";
 
 declare global {
@@ -23,7 +23,7 @@ Object.defineProperty(Promise, "retry", {
       reject: (reason?: any) => void
     ) => void,
     retries: number = Number(DEFAULT_RETRY_COUNT),
-    timeout: number = Number(DEFAULT_RETRY_TIMEOUT)
+    timeout: number = Number(DEFAULT_RETRY_DELAY)
   ): Promise<T> {
     if (typeof retries !== "number") {
       throw new TypeError("retries is not a number");

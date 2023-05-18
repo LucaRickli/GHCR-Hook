@@ -13,18 +13,17 @@ createServer(async (req, res) => {
     `${req.socket.remoteAddress} => ${req.method} ${req.headers.host}${req.url}`
   );
 
-  const end = (statusCode: number, message: string) => {
-    res
-      .writeHead(statusCode, { "Content-Type": "application/json" })
-      .end(message);
-  };
+  // prettier-ignore
+  const end = (status: number, msg: string) => res.writeHead(status, { "Content-Type": "application/json" }).end(`{"error":"${msg}"}`);
 
   const next = (err: any = undefined) => {
     if (err) {
       Log.error("Middleware error:", err);
-      end(500, `{"error":"Internal server error"}`);
+      end(500, `Internal server error`);
     } else if (!res.headersSent) {
-      end(404, `{"error":"Unknown route: ${req.method} ${req.url}"}`);
+      const msg = `Unknown route: ${req.method} ${req.url}`;
+      Log.debug(msg);
+      end(404, msg);
     }
   };
 

@@ -1,20 +1,18 @@
 import * as Docker from "dockerode";
 import { statSync } from "fs";
 
-import { SOCKET_PATH } from "../utils/config";
+import { DOCKER_SOCKET_PATH } from "../utils/config";
 import { Log } from "../utils/log";
-import internal = require("stream");
-
-if (!statSync(SOCKET_PATH).isSocket()) {
-  throw "Are you sure the docker is running?";
-}
 
 class DockerController {
   private readonly docker: Docker;
 
   public constructor(
-    { socketPath = SOCKET_PATH } = { socketPath: SOCKET_PATH }
+    { socketPath = DOCKER_SOCKET_PATH } = { socketPath: DOCKER_SOCKET_PATH }
   ) {
+    if (!statSync(DOCKER_SOCKET_PATH).isSocket()) {
+      throw new Error("Docker socket is not reachable!");
+    }
     this.docker = new Docker({ socketPath });
   }
 
@@ -52,7 +50,7 @@ class DockerController {
       stopPromises.add(
         new Promise(async (resolve, reject) => {
           try {
-            const snapshot = await this.createContainerSnapshot(Id, tag);
+            const snapshot = await this.createContainerSnapshot(Id);
             snapshots.add({ options: snapshot, running: State === "running" });
 
             Log.info(`Removing container: ${snapshot.name} (${Id}).`);
@@ -189,7 +187,7 @@ class DockerController {
 
   private async pullImage(tag: string) {
     return Promise.retry<any>((resolve, reject) => {
-      this.docker.pull(tag, (err: any, stream: internal.Stream) => {
+      this.docker.pull(tag, (err: any, stream: import("stream").Stream) => {
         if (err) reject(err);
         this.docker.modem.followProgress(
           stream,
@@ -227,14 +225,14 @@ class DockerController {
   }
 
   private async createContainerSnapshot(
-    Id: string,
-    Image: string
+    Id: string
   ): Promise<Docker.ContainerCreateOptions> {
     const {
       Config,
       Name,
       HostConfig,
       NetworkSettings: { MacAddress, Networks },
+      Image,
     } = await Promise.retry<Docker.ContainerInspectInfo>((resolve, reject) =>
       this.docker.getContainer(Id).inspect().then(resolve).catch(reject)
     ).catch((reason) => {
