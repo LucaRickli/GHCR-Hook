@@ -50,7 +50,7 @@ class DockerController {
       stopPromises.add(
         new Promise(async (resolve, reject) => {
           try {
-            const snapshot = await this.createContainerSnapshot(Id);
+            const snapshot = await this.createContainerSnapshot(Id, tag);
             snapshots.add({ options: snapshot, running: State === "running" });
 
             Log.info(`Removing container: ${snapshot.name} (${Id}).`);
@@ -75,7 +75,7 @@ class DockerController {
       Log.info(`Updating image "${tag}".`);
       await this.pullImage(tag);
 
-      /* Log.info("Pruning untagged images.");
+      Log.info("Pruning untagged images.");
       const pruneResult = await this.pruneImages();
 
       Log.debug("Pruning untagged images results:");
@@ -85,7 +85,7 @@ class DockerController {
             i.Untagged ? "  Untagged:" + i.Untagged : ""
           }`
         )
-      ).join("\n"); */
+      ).join("\n");
     } else {
       Log.error(
         `Error while stopping ${stopFailures} container${
@@ -205,7 +205,7 @@ class DockerController {
     });
   }
 
-  /* private async pruneImages() {
+  private async pruneImages() {
     return Promise.retry<Docker.PruneImagesInfo>(
       (resolve, reject) =>
         this.docker
@@ -222,17 +222,18 @@ class DockerController {
       Log.error(msg, `Reason:`, reason);
       throw new Error(msg);
     });
-  } */
+  }
 
   private async createContainerSnapshot(
-    Id: string
+    Id: string,
+    Image: string
   ): Promise<Docker.ContainerCreateOptions> {
     const {
       Config,
       Name,
       HostConfig,
       NetworkSettings: { MacAddress, Networks },
-      Image,
+      // Image,
     } = await Promise.retry<Docker.ContainerInspectInfo>((resolve, reject) =>
       this.docker.getContainer(Id).inspect().then(resolve).catch(reject)
     ).catch((reason) => {
