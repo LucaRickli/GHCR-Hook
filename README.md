@@ -31,7 +31,7 @@ echo $(openssl rand -base64 32 | tr -d '\n') > webhook.secret
 Create `docker-compose.yml`.
 
 ```yml
-version: "3.8"
+version: '3.8'
 
 secrets:
   webhook:

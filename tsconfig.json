@@ -1,22 +1,4 @@
 {
-  "compilerOptions": {
-    "target": "es2015",
-    "module": "commonjs",
-    "lib": ["es5", "es6", "dom"],
-    "rootDir": "src"
-  },
-  "exclude": ["webpack.config.cts"]
+  "extends": "@tsconfig/node18/tsconfig.json",
+  "include": ["src/**/*"]
 }
-
-// {
-//   "extends": "@tsconfig/node18/tsconfig.json",
-//   "compilerOptions": {
-//     // "outDir": "dist"
-//     "module": "AMD",
-//     "lib": ["es5", "es6", "dom"],
-//     "rootDir": "./src/",
-//     "outFile": "./dist/index.js"
-//   },
-//   // "include": ["src"],
-//   "exclude": ["node_modules"]
-// }

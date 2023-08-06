@@ -1,8 +1,8 @@
-import { config } from "dotenv";
-import { readFileSync } from "fs";
-import { join } from "path";
+import { config } from 'dotenv'
+import { readFileSync } from 'fs'
+import { join } from 'path'
 
-config();
+config()
 
 // prettier-ignore
 export const {
@@ -34,14 +34,14 @@ export const {
 } = process.env;
 
 export const WEBHOOK_SECRET = WEBHOOK_SECRET_FILE
-  ? readFileSync(WEBHOOK_SECRET_FILE, "utf-8").trim()
-  : WEBHOOK_SECRET_SRC;
+  ? (readFileSync(WEBHOOK_SECRET_FILE, 'utf-8')?.trim() as string)
+  : (WEBHOOK_SECRET_SRC as string)
 
-if (!WEBHOOK_SECRET) throw new Error("WEBHOOK_SECRET is required!");
+if (!WEBHOOK_SECRET) throw new Error('WEBHOOK_SECRET is required!')
 
-export const ERR_LOG_FILE = join(LOG_PATH, "/err.log");
-export const ACCESS_LOG_FILE = join(LOG_PATH, "/access.log");
+export const ERR_LOG_FILE = join(LOG_PATH, '/err.log')
+export const ACCESS_LOG_FILE = join(LOG_PATH, '/access.log')
 
-export const DOCKER_IMAGE_REGEX = new RegExp(DOCKER_IMAGE_REGEX_SRC);
+export const DOCKER_IMAGE_REGEX = new RegExp(DOCKER_IMAGE_REGEX_SRC)
 export const DOCKER_IMAGE_BLACKLIST = DOCKER_IMAGE_BLACKLIST_SRC.toLowerCase().trim().split(/ /g); // prettier-ignore
 export const IS_IMAGE_BLACKLISTED = (img: string): boolean => DOCKER_IMAGE_BLACKLIST.includes(img.toLowerCase()); // prettier-ignore
