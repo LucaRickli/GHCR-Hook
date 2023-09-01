@@ -1,5 +1,7 @@
 # GHCR-Hook
 
+![workflow](https://img.shields.io/github/actions/workflow/status/lucarickli/ghcr-hook/build.yml)
+
 #### Keep your local Docker images & containers in sync with GitHub's Container Registry using webhooks.
 
 The server reacts to webhooks from GitHub with the event `package.published`. If everything checks out it proceeds to download the new image & restart every container with the same configuration it was started except for the new image.
