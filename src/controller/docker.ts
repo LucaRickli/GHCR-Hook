@@ -48,45 +48,72 @@ class DockerController {
     for (const container of containers) {
       updatePromises.add(
         new Promise(async (reslve, reject) => {
+          let snapshot: Awaited<ReturnType<typeof this.createContainerSnapshot>>
+
           try {
             Log.info(`Creating snapshot of container '${container.Names[0]}' (${container.Id}).`)
-            const snapshot = await this.createContainerSnapshot(container.Id, newImage.Id)
+            snapshot = await this.createContainerSnapshot(container.Id, newImage.Id)
 
             Log.info(`Removing container '${snapshot.name}' (${container.Id}).`)
             await this.removeContainer(container.Id, true)
+          } catch (err) {
+            return reject(undefined)
+          }
 
-            Log.info(`Creating new container '${snapshot.name}' (formerly ${container.Id})`)
+          try {
+            Log.info(`Creating new container '${snapshot.name}'`)
             const { id } = await this.createContainer(snapshot)
 
             if (container.State === 'running') {
-              Log.info(`Starting container: ${snapshot.name} (${id}) (formerly ${container.Id}).`)
+              Log.info(`Starting container ${snapshot.name} (${id}).`)
               await this.startContainer(id)
             }
 
             reslve(void 0)
           } catch (err) {
             Log.error(
-              `Error while restarting container '${container.Names?.[0]}' (${container.Id}). Reason:`,
+              `Error while restarting container '${container.Names?.[0]}' (${container.Id}).`,
               err
             )
-            reject(void 0)
+
+            if (snapshot) {
+              try {
+                Log.info(`Recovering container '${snapshot.name}'`)
+                const { id } = await this.createContainer({ ...snapshot, Image: oldImage.Id })
+
+                if (container.State === 'running') {
+                  Log.info(`Starting recovered container ${snapshot.name} (${id}).`)
+                  await this.startContainer(id)
+                }
+              } catch (recoveryError) {
+                Log.error(
+                  `Failed to recover container '${container.Names?.[0]}' (${container.Id}).`,
+                  recoveryError
+                )
+              }
+            }
+
+            reject(undefined)
           }
         })
       )
     }
 
     const updateResults = await Promise.allSettled(updatePromises)
-    if (updateResults.find((i) => i.status === 'rejected')) {
+    const failed = updateResults.filter((i) => i.status === 'rejected').length
+
+    if (failed) {
+      Log.error(`${failed} restart failed. Skipping deletion of old Image.`)
+    } else {
+      Log.info('Removing old image ')
+      await this.removeImage(oldImage.Id)
+
+      Log.info(
+        `Successfully pulled new image & restared ${updatePromises.size} container${
+          updatePromises.size > 1 ? 's' : ''
+        }.`
+      )
     }
-
-    Log.info('Removing old image ')
-    await this.removeImage(oldImage.Id)
-
-    Log.info(
-      `Successfully pulled new image & restared ${updatePromises.size} container${
-        updatePromises.size > 1 ? 's' : ''
-      }.`
-    )
   }
 
   private async getImages(tag: string | string[]) {
