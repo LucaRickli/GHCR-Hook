@@ -15,6 +15,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          registry-url: 'https://registry.npmjs.org'
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
         with:
@@ -22,7 +28,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Application
+        run: npm run build
+
       - name: Build Docker image
-        run: |
-          docker build . --tag ghcr.io/lucarickli/ghcr-hook:latest
-          docker push ghcr.io/lucarickli/ghcr-hook:latest
+        run: docker build . --tag ghcr.io/lucarickli/ghcr-hook:latest
+
+      - name: Publish Docker image
+        run: docker push ghcr.io/lucarickli/ghcr-hook:latest
