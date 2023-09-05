@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "@tsconfig/node18": "^2.0.1",
+    "@tsconfig/node20": "^20.1.2",
     "@types/dockerode": "^3.3.17",
     "@types/node": "^20.1.0",
     "@types/webpack": "^5.28.1",
